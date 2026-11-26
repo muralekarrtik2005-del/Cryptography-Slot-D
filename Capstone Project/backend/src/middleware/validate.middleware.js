@@ -1,0 +1,13 @@
+import { validationResult } from 'express-validator';
+
+export const handleValidationErrors = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      message: 'Validation failed on input parameters',
+      errors: errors.array().map((err) => ({ field: err.path || err.param, message: err.msg })),
+    });
+  }
+  next();
+};

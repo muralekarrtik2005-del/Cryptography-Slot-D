@@ -1,0 +1,32 @@
+import express from 'express';
+import { body } from 'express-validator';
+import { register, login, getMe } from '../controllers/auth.controller.js';
+import { protect } from '../middleware/auth.middleware.js';
+import { handleValidationErrors } from '../middleware/validate.middleware.js';
+
+const router = express.Router();
+
+router.post(
+  '/register',
+  [
+    body('name').trim().notEmpty().withMessage('Name is required'),
+    body('email').isEmail().withMessage('Please provide a valid email'),
+    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+    handleValidationErrors,
+  ],
+  register
+);
+
+router.post(
+  '/login',
+  [
+    body('email').isEmail().withMessage('Please provide a valid email'),
+    body('password').notEmpty().withMessage('Password is required'),
+    handleValidationErrors,
+  ],
+  login
+);
+
+router.get('/me', protect, getMe);
+
+export default router;
